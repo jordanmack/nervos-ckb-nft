@@ -275,12 +275,12 @@ fn collect_nft_quantity(instance_id: &Vec<u8>, token_logic: &Option<Vec<u8>>, nf
 	Ok(quantity)
 }
 
-/// Collect the quantities of the match NFT tokens group input and group output, taking into account the owner_mode.
-fn collect_nft_quantities(nft_data: &NftData, group_input_nft_data: &Vec<NftData>, group_output_nft_data: &Vec<NftData>, owner_mode: bool) -> Result<(u128, u128), Error>
+/// Collect the quantities of the match NFT tokens group input and group output.
+fn collect_nft_quantities(nft_data: &NftData, group_input_nft_data: &Vec<NftData>, group_output_nft_data: &Vec<NftData>, consider_token_logic: bool) -> Result<(u128, u128), Error>
 {
 	let nft_data = NftDataResolved::from(nft_data);
 	let instance_id = nft_data.instance_id;
-	let token_logic = if !owner_mode { Some(nft_data.token_logic) } else { None };
+	let token_logic = if !consider_token_logic { Some(nft_data.token_logic) } else { None };
 
 	let group_input_quantity = collect_nft_quantity(&instance_id, &token_logic, group_input_nft_data)?;
 	let group_output_quantity = collect_nft_quantity(&instance_id, &token_logic, group_output_nft_data)?;
