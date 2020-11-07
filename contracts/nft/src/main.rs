@@ -280,7 +280,7 @@ fn collect_nft_quantities(nft_data: &NftData, group_input_nft_data: &Vec<NftData
 {
 	let nft_data = NftDataResolved::from(nft_data);
 	let instance_id = nft_data.instance_id;
-	let token_logic = if !consider_token_logic { Some(nft_data.token_logic) } else { None };
+	let token_logic = if consider_token_logic { Some(nft_data.token_logic) } else { None };
 
 	let group_input_quantity = collect_nft_quantity(&instance_id, &token_logic, group_input_nft_data)?;
 	let group_output_quantity = collect_nft_quantity(&instance_id, &token_logic, group_output_nft_data)?;
