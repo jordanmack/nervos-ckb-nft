@@ -195,7 +195,7 @@ fn collect_nft_indexes(script_hash: [u8; BLAKE2B256_HASH_LEN], source: Source) -
 }
 
 /// Collect all unique Instance IDs.
-fn collect_unique_instance_ids(nft_datas: &Vec<NftData>) -> BTreeSet<Vec<u8>>
+fn collect_unique_instance_ids(nft_datas: &Vec<NftDataResolved>) -> BTreeSet<Vec<u8>>
 {
 	let mut instance_ids = BTreeSet::new();
 
@@ -211,7 +211,7 @@ fn collect_unique_instance_ids(nft_datas: &Vec<NftData>) -> BTreeSet<Vec<u8>>
 }
 
 /// Collect all token logic code hashes which should be executed.
-fn collect_executable_token_logic_hashes(nft_data_sets: &Vec<&Vec<NftData>>) -> Result<BTreeSet<Vec<u8>>, Error>
+fn collect_executable_token_logic_hashes(nft_data_sets: &Vec<&Vec<NftDataResolved>>) -> Result<BTreeSet<Vec<u8>>, Error>
 {
 	let mut token_logic_code_hashes = BTreeSet::new();
 
@@ -219,16 +219,10 @@ fn collect_executable_token_logic_hashes(nft_data_sets: &Vec<&Vec<NftData>>) -> 
 	{
 		for nft_data in nft_data_set.iter()
 		{
-			if nft_data.token_logic.is_some()
+			// Do not include zero-filled hashes.
+			if nft_data.token_logic != CODE_HASH_NULL
 			{
-				// Extract the code hash array from the NftData instance.
-				let token_logic_code_hash = nft_data.token_logic.clone().unwrap().into_iter().take(TOKEN_LOGIC_LEN).collect();
-
-				// Do not include zero-filled hashes.
-				if token_logic_code_hash != CODE_HASH_NULL
-				{
-					token_logic_code_hashes.insert(token_logic_code_hash);
-				}
+				token_logic_code_hashes.insert(nft_data.token_logic.clone());
 			}
 		}
 	}
@@ -237,23 +231,23 @@ fn collect_executable_token_logic_hashes(nft_data_sets: &Vec<&Vec<NftData>>) -> 
 }
 
 /// Collect and parse all NftData from the specified source.
-fn collect_nft_data(source: Source) -> Result<Vec<NftData>, Error>
+fn collect_nft_data(source: Source) -> Result<Vec<NftDataResolved>, Error>
 {
 	let parse_and_validate_nft_data = |x: Vec<u8>|
 	{
 		let nft_data = parse_nft_data(&x)?;
 		validate_nft_data(&nft_data)?;
 
-		Ok(nft_data)
+		Ok((&nft_data).into())
 	};
 
-	let nft_data: Result<Vec<NftData>, Error> = QueryIter::new(load_cell_data, source).map(|x|parse_and_validate_nft_data(x)).collect();
+	let nft_data: Result<Vec<NftDataResolved>, Error> = QueryIter::new(load_cell_data, source).map(|x|parse_and_validate_nft_data(x)).collect();
 
 	Ok(nft_data?)
 }
 
 /// Collect the NFT quantity from the matching Instance ID and token logic value only if included.
-fn collect_nft_quantity(instance_id: &Vec<u8>, token_logic: &Option<Vec<u8>>, nft_datas: &Vec<NftData>) -> Result<u128, Error>
+fn collect_nft_quantity(instance_id: &Vec<u8>, token_logic: &Option<Vec<u8>>, nft_datas: &Vec<NftDataResolved>) -> Result<u128, Error>
 {
 	let mut quantity = 0u128;
 	let token_logic_exists = token_logic.is_some();
@@ -261,8 +255,6 @@ fn collect_nft_quantity(instance_id: &Vec<u8>, token_logic: &Option<Vec<u8>>, nf
 
 	for nft_data in nft_datas.iter()
 	{
-		let nft_data = NftDataResolved::from(nft_data);
-
 		if &nft_data.instance_id == instance_id
 		{
 			if !token_logic_exists || nft_data.token_logic == token_logic
@@ -276,29 +268,25 @@ fn collect_nft_quantity(instance_id: &Vec<u8>, token_logic: &Option<Vec<u8>>, nf
 }
 
 /// Collect the quantities of the match NFT tokens group input and group output.
-fn collect_nft_quantities(nft_data: &NftData, group_input_nft_data: &Vec<NftData>, group_output_nft_data: &Vec<NftData>, consider_token_logic: bool) -> Result<(u128, u128), Error>
+fn collect_nft_quantities(nft_data: &NftDataResolved, group_input_nft_data: &Vec<NftDataResolved>, group_output_nft_data: &Vec<NftDataResolved>, consider_token_logic: bool) -> Result<(u128, u128), Error>
 {
-	let nft_data = NftDataResolved::from(nft_data);
-	let instance_id = nft_data.instance_id;
-	let token_logic = if consider_token_logic { Some(nft_data.token_logic) } else { None };
+	let instance_id = &nft_data.instance_id;
+	let token_logic = if consider_token_logic { Some(nft_data.token_logic.clone()) } else { None };
 
-	let group_input_quantity = collect_nft_quantity(&instance_id, &token_logic, group_input_nft_data)?;
-	let group_output_quantity = collect_nft_quantity(&instance_id, &token_logic, group_output_nft_data)?;
+	let group_input_quantity = collect_nft_quantity(instance_id, &token_logic, group_input_nft_data)?;
+	let group_output_quantity = collect_nft_quantity(instance_id, &token_logic, group_output_nft_data)?;
 
 	Ok((group_input_quantity, group_output_quantity))
 }
 
 /// Check for data modifications within a Vec<NftData> where the Instance ID and Token Logic match.
-fn count_nft_data_modifications(nft_data: &NftData, group_nft_data: &Vec<NftData>) -> Result<usize, Error>
+fn count_nft_data_modifications(nft_data: &NftDataResolved, group_nft_data: &Vec<NftDataResolved>) -> Result<usize, Error>
 {
-	let output_nft_data = NftDataResolved::from(nft_data);
 	let mut modifications = 0;
 
 	for input_nft_data in group_nft_data.iter()
 	{
-		let input_nft_data = NftDataResolved::from(input_nft_data);
-
-		if output_nft_data.instance_id == input_nft_data.instance_id && output_nft_data.token_logic == input_nft_data.token_logic && output_nft_data.custom != input_nft_data.custom
+		if nft_data.instance_id == input_nft_data.instance_id && nft_data.token_logic == input_nft_data.token_logic && nft_data.custom != input_nft_data.custom
 		{
 			modifications += 1;
 		}
@@ -465,7 +453,7 @@ fn main() -> Result<(), Error>
 	// let group_input_cell_data: Vec<Cell> = QueryIter::new(load_cell_data, Source::GroupInput).collect();
 	// let group_output_cell_data: Vec<Cell> = QueryIter::new(load_cell_data, Source::GroupOutput).collect();
 
-	// Parse and collect NftData from the group input and group output.
+	// Parse and collect NftDataResolved from the group input and group output.
 	let group_input_nft_data = collect_nft_data(Source::GroupInput)?;
 	let group_output_nft_data = collect_nft_data(Source::GroupOutput)?;
 
@@ -516,9 +504,9 @@ fn main() -> Result<(), Error>
 			}
 
 			// Collect token logic code hash for future validation or execution.
-			if output_nft_data.token_logic.is_some()
+			if output_nft_data.token_logic != CODE_HASH_NULL
 			{
-				let token_logic_code_hash = output_nft_data.token_logic.clone().unwrap();
+				let token_logic_code_hash = output_nft_data.token_logic.clone();
 				if token_logic_code_hash != CODE_HASH_NULL
 				{
 					if owner_mode || count_nft_data_modifications(&output_nft_data, &group_input_nft_data)? == 0
@@ -550,9 +538,9 @@ fn main() -> Result<(), Error>
 				return Err(Error::InvalidInstanceId);
 			}
 
-			if output_nft_data.token_logic.is_some()
+			if output_nft_data.token_logic != CODE_HASH_NULL
 			{
-				validate_token_logic(&output_nft_data.token_logic.as_ref().unwrap())?;
+				validate_token_logic(&output_nft_data.token_logic)?;
 			}
 		}
 	}
