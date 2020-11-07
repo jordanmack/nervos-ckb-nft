@@ -498,11 +498,21 @@ fn main() -> Result<(), Error>
 		{
 			// debug!("Operation: Transfer/Update/Burn");
 
-			// Validate quantities taking into account the owner mode.
-			let (input_nft_quantity, output_nft_quantity) = collect_nft_quantities(&output_nft_data, &group_input_nft_data, &group_output_nft_data, owner_mode)?;
+			// Validate quantities using only Instance ID.
+			let (input_nft_quantity, output_nft_quantity) = collect_nft_quantities(&output_nft_data, &group_input_nft_data, &group_output_nft_data, false)?;
 			if output_nft_quantity > input_nft_quantity
 			{
 				return Err(Error::InvalidQuantity);
+			}
+
+			// Check for an unauthorized operation which changes a Token Logic if not owner.
+			if !owner_mode
+			{
+				let (input_nft_quantity, output_nft_quantity) = collect_nft_quantities(&output_nft_data, &group_input_nft_data, &group_output_nft_data, true)?;
+				if output_nft_quantity > input_nft_quantity
+				{
+					return Err(Error::UnauthorizedOperation);
+				}
 			}
 
 			// Collect token logic code hash for future validation or execution.

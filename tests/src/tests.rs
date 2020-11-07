@@ -2462,7 +2462,7 @@ fn transfer_token_logic_unauthorized()
 
 	// Execute the transaction.
 	let err = context.verify_tx(&tx, MAX_CYCLES).unwrap_err();
-	assert_error_eq!(err, ScriptError::ValidationFailure(Error::InvalidQuantity as i8).input_type_script(0));
+	assert_error_eq!(err, ScriptError::ValidationFailure(Error::UnauthorizedOperation as i8).input_type_script(0));
 }
 
 #[test]
@@ -3554,7 +3554,7 @@ fn update_token_logic_unauthorized()
 
 	// Execute the transaction.
 	let err = context.verify_tx(&tx, MAX_CYCLES).unwrap_err();
-	assert_error_eq!(err, ScriptError::ValidationFailure(Error::InvalidQuantity as i8).input_type_script(0));
+	assert_error_eq!(err, ScriptError::ValidationFailure(Error::UnauthorizedOperation as i8).input_type_script(0));
 }
 
 #[test]
