@@ -288,6 +288,25 @@ fn collect_nft_quantities(nft_data: &NftData, group_input_nft_data: &Vec<NftData
 	Ok((group_input_quantity, group_output_quantity))
 }
 
+/// Check for data modifications within a Vec<NftData> where the Instance ID and Token Logic match.
+fn count_nft_data_modifications(nft_data: &NftData, group_nft_data: &Vec<NftData>) -> Result<usize, Error>
+{
+	let output_nft_data = NftDataResolved::from(nft_data);
+	let mut modifications = 0;
+
+	for input_nft_data in group_nft_data.iter()
+	{
+		let input_nft_data = NftDataResolved::from(input_nft_data);
+
+		if output_nft_data.instance_id == input_nft_data.instance_id && output_nft_data.token_logic == input_nft_data.token_logic && output_nft_data.custom != input_nft_data.custom
+		{
+			modifications += 1;
+		}
+	}
+
+	Ok(modifications)
+}
+
 /// Execute the token logic in a Cell with the specified code hash.
 fn execute_token_logic(token_logic_code_hash: &Vec<u8>) -> Result<(), Error>
 {
@@ -467,8 +486,9 @@ fn main() -> Result<(), Error>
 	// Determine the Seed Cell Outpoint.
 	let seed_cell_outpoint = load_input(0, Source::Input)?.previous_output();
 
-	// Collect unique Token Logic code hashes which will be executed.
-	let mut token_logic_code_hashes = BTreeSet::new();
+	// Collect unique Token Logic code hashes which will be executed or validated.
+	let mut token_logic_code_hashes_execute = BTreeSet::new();
+	let mut token_logic_code_hashes_validate = BTreeSet::new();
 
 	// Loop through all group output NFTData.
 	for (index, output_nft_data) in group_output_nft_data.iter().enumerate()
@@ -491,7 +511,14 @@ fn main() -> Result<(), Error>
 				let token_logic_code_hash = output_nft_data.token_logic.clone().unwrap();
 				if token_logic_code_hash != CODE_HASH_NULL
 				{
-					token_logic_code_hashes.insert(token_logic_code_hash);
+					if owner_mode || count_nft_data_modifications(&output_nft_data, &group_input_nft_data)? == 0
+					{
+						token_logic_code_hashes_validate.insert(token_logic_code_hash);
+					}
+					else
+					{
+						token_logic_code_hashes_execute.insert(token_logic_code_hash);
+					}
 				}
 			}
 		}
@@ -521,22 +548,21 @@ fn main() -> Result<(), Error>
 	}
 
 	// Collect all unique executable token logic code hashes from the group input if not owner mode.
-	if !owner_mode
+	// if !owner_mode
+	// {
+	// 	token_logic_code_hashes_execute.append(&mut collect_executable_token_logic_hashes(&vec!(&group_input_nft_data))?);
+	// }
+
+	// Validate Token Logic.
+	for token_logic_code_hash in token_logic_code_hashes_validate.iter()
 	{
-		token_logic_code_hashes.append(&mut collect_executable_token_logic_hashes(&vec!(&group_input_nft_data))?);
+		validate_token_logic(token_logic_code_hash)?;
 	}
 
-	// Execute all Token Logic.
-	for token_logic_code_hash in token_logic_code_hashes.iter()
+	// Execute Token Logic.
+	for token_logic_code_hash in token_logic_code_hashes_execute.iter()
 	{
-		if owner_mode
-		{
-			validate_token_logic(token_logic_code_hash)?;
-		}
-		else
-		{
-			execute_token_logic(token_logic_code_hash)?;
-		}
+		execute_token_logic(token_logic_code_hash)?;
 	}
 
 	Ok(())
