@@ -14,11 +14,11 @@ const CODE_HASH_NULL: [u8; 32] = [0u8; 32];
 #[allow(dead_code)]
 enum Error
 {
-	IndexOutOfBound = 1,
+	IndexOutOfBound,
 	ItemMissing,
 	LengthNotEnough,
 	Encoding,
-	InvalidArgsLen = 100,
+	InvalidArgsLen,
 	InvalidInstanceId,
 	InvalidInstanceIdLength,
 	InvalidQuantity,
@@ -30,7 +30,38 @@ enum Error
 	MissingTokenLogicFunction,
 	UnauthorizedOperation,
 	UnexpectedCellMismatch,
+	UnexpectedTokenLogicErrorCode,
+	TokenLogicError(i8),
 }
+
+impl From<Error> for i8
+{
+	fn from(err: Error) -> Self
+	{
+		match err
+		{
+			Error::IndexOutOfBound => 1,
+			Error::ItemMissing => 2,
+			Error::LengthNotEnough => 3,
+			Error::Encoding => 4,
+			Error::InvalidArgsLen => 10,
+			Error::InvalidInstanceId => 11,
+			Error::InvalidInstanceIdLength => 12,
+			Error::InvalidQuantity => 13,
+			Error::InvalidQuantityLength => 14,
+			Error::InvalidStructure => 15,
+			Error::InvalidTokenLogicCellDep => 16,
+			Error::InvalidTokenLogicLength => 17,
+			Error::MissingTokenLogicCellDep => 18,
+			Error::MissingTokenLogicFunction => 19,
+			Error::UnauthorizedOperation => 20,
+			Error::UnexpectedCellMismatch => 21,
+			Error::UnexpectedTokenLogicErrorCode => 22,
+			Error::TokenLogicError(e) => e,
+		}
+	}
+}
+
 /// A structure for holding common resources used in multiple tests.
 struct LocalResources
 {
@@ -590,7 +621,7 @@ fn generate_bare_invalid_instance_id_length()
 
 	// Execute the transaction.
 	let err = context.verify_tx(&tx, MAX_CYCLES).unwrap_err();
-	assert_error_eq!(err, ScriptError::ValidationFailure(Error::InvalidInstanceIdLength as i8).output_type_script(0));
+	assert_error_eq!(err, ScriptError::ValidationFailure(i8::from(Error::InvalidInstanceIdLength)).output_type_script(0));
 }
 
 #[test]
@@ -623,7 +654,7 @@ fn generate_bare_invalid_instance_id()
 
 	// Execute the transaction.
 	let err = context.verify_tx(&tx, MAX_CYCLES).unwrap_err();
-	assert_error_eq!(err, ScriptError::ValidationFailure(Error::InvalidInstanceId as i8).output_type_script(0));
+	assert_error_eq!(err, ScriptError::ValidationFailure(i8::from(Error::InvalidInstanceId)).output_type_script(0));
 }
 
 #[test]
@@ -660,7 +691,7 @@ fn generate_quantity_invalid_quantity_length()
 
 	// Execute the transaction.
 	let err = context.verify_tx(&tx, MAX_CYCLES).unwrap_err();
-	assert_error_eq!(err, ScriptError::ValidationFailure(Error::InvalidQuantityLength as i8).output_type_script(0));
+	assert_error_eq!(err, ScriptError::ValidationFailure(i8::from(Error::InvalidQuantityLength)).output_type_script(0));
 }
 
 #[test]
@@ -698,7 +729,7 @@ fn generate_token_logic_invalid_token_logic_length()
 
 	// Execute the transaction.
 	let err = context.verify_tx(&tx, MAX_CYCLES).unwrap_err();
-	assert_error_eq!(err, ScriptError::ValidationFailure(Error::InvalidTokenLogicLength as i8).output_type_script(0));
+	assert_error_eq!(err, ScriptError::ValidationFailure(i8::from(Error::InvalidTokenLogicLength)).output_type_script(0));
 }
 
 #[test]
@@ -736,7 +767,7 @@ fn generate_token_logic_invalid_cell_dep()
 
 	// Execute the transaction.
 	let err = context.verify_tx(&tx, MAX_CYCLES).unwrap_err();
-	assert_error_eq!(err, ScriptError::ValidationFailure(Error::MissingTokenLogicCellDep as i8).output_type_script(0));
+	assert_error_eq!(err, ScriptError::ValidationFailure(i8::from(Error::MissingTokenLogicCellDep)).output_type_script(0));
 }
 
 #[test]
@@ -773,7 +804,7 @@ fn generate_bare_unauthorized()
 
 	// Execute the transaction.
 	let err = context.verify_tx(&tx, MAX_CYCLES).unwrap_err();
-	assert_error_eq!(err, ScriptError::ValidationFailure(Error::UnauthorizedOperation as i8).output_type_script(0));
+	assert_error_eq!(err, ScriptError::ValidationFailure(i8::from(Error::UnauthorizedOperation)).output_type_script(0));
 }
 
 #[test]
@@ -2312,7 +2343,7 @@ fn transfer_bare_invalid_instance_id_length()
 
 	// Execute the transaction.
 	let err = context.verify_tx(&tx, MAX_CYCLES).unwrap_err();
-	assert_error_eq!(err, ScriptError::ValidationFailure(Error::InvalidInstanceIdLength as i8).input_type_script(0));
+	assert_error_eq!(err, ScriptError::ValidationFailure(i8::from(Error::InvalidInstanceIdLength)).input_type_script(0));
 }
 
 #[test]
@@ -2370,7 +2401,7 @@ fn transfer_quantity_invalid_quantity()
 
 	// Execute the transaction.
 	let err = context.verify_tx(&tx, MAX_CYCLES).unwrap_err();
-	assert_error_eq!(err, ScriptError::ValidationFailure(Error::InvalidQuantity as i8).input_type_script(0));
+	assert_error_eq!(err, ScriptError::ValidationFailure(i8::from(Error::InvalidQuantity)).input_type_script(0));
 }
 
 #[test]
@@ -2415,7 +2446,7 @@ fn transfer_quantity_invalid_quantity_length()
 
 	// Execute the transaction.
 	let err = context.verify_tx(&tx, MAX_CYCLES).unwrap_err();
-	assert_error_eq!(err, ScriptError::ValidationFailure(Error::InvalidQuantityLength as i8).input_type_script(0));
+	assert_error_eq!(err, ScriptError::ValidationFailure(i8::from(Error::InvalidQuantityLength)).input_type_script(0));
 }
 
 #[test]
@@ -2462,7 +2493,7 @@ fn transfer_token_logic_unauthorized()
 
 	// Execute the transaction.
 	let err = context.verify_tx(&tx, MAX_CYCLES).unwrap_err();
-	assert_error_eq!(err, ScriptError::ValidationFailure(Error::UnauthorizedOperation as i8).input_type_script(0));
+	assert_error_eq!(err, ScriptError::ValidationFailure(i8::from(Error::UnauthorizedOperation)).input_type_script(0));
 }
 
 #[test]
@@ -2512,7 +2543,7 @@ fn transfer_token_logic_invalid_token_logic_length()
 
 	// Execute the transaction.
 	let err = context.verify_tx(&tx, MAX_CYCLES).unwrap_err();
-	assert_error_eq!(err, ScriptError::ValidationFailure(Error::InvalidTokenLogicLength as i8).input_type_script(1));
+	assert_error_eq!(err, ScriptError::ValidationFailure(i8::from(Error::InvalidTokenLogicLength)).input_type_script(1));
 }
 
 #[test]
@@ -2561,7 +2592,7 @@ fn transfer_token_logic_invalid_token_logic_cell_dep()
 
 	// Execute the transaction.
 	let err = context.verify_tx(&tx, MAX_CYCLES).unwrap_err();
-	assert_error_eq!(err, ScriptError::ValidationFailure(Error::MissingTokenLogicCellDep as i8).input_type_script(1));
+	assert_error_eq!(err, ScriptError::ValidationFailure(i8::from(Error::MissingTokenLogicCellDep)).input_type_script(1));
 }
 
 #[test]
@@ -2600,7 +2631,7 @@ fn transfer_bare_owner_invalid_instance_id_length()
 
 	// Execute the transaction.
 	let err = context.verify_tx(&tx, MAX_CYCLES).unwrap_err();
-	assert_error_eq!(err, ScriptError::ValidationFailure(Error::InvalidInstanceIdLength as i8).input_type_script(0));
+	assert_error_eq!(err, ScriptError::ValidationFailure(i8::from(Error::InvalidInstanceIdLength)).input_type_script(0));
 }
 
 #[test]
@@ -2670,7 +2701,7 @@ fn transfer_quantity_owner_invalid_quantity()
 
 	// Execute the transaction.
 	let err = context.verify_tx(&tx, MAX_CYCLES).unwrap_err();
-	assert_error_eq!(err, ScriptError::ValidationFailure(Error::InvalidQuantity as i8).input_type_script(0));
+	assert_error_eq!(err, ScriptError::ValidationFailure(i8::from(Error::InvalidQuantity)).input_type_script(0));
 }
 
 #[test]
@@ -2715,7 +2746,7 @@ fn transfer_quantity_owner_invalid_quantity_length()
 
 	// Execute the transaction.
 	let err = context.verify_tx(&tx, MAX_CYCLES).unwrap_err();
-	assert_error_eq!(err, ScriptError::ValidationFailure(Error::InvalidQuantityLength as i8).input_type_script(0));
+	assert_error_eq!(err, ScriptError::ValidationFailure(i8::from(Error::InvalidQuantityLength)).input_type_script(0));
 }
 
 #[test]
@@ -2765,7 +2796,7 @@ fn transfer_token_logic_owner_invalid_token_logic_length()
 
 	// Execute the transaction.
 	let err = context.verify_tx(&tx, MAX_CYCLES).unwrap_err();
-	assert_error_eq!(err, ScriptError::ValidationFailure(Error::InvalidTokenLogicLength as i8).input_type_script(1));
+	assert_error_eq!(err, ScriptError::ValidationFailure(i8::from(Error::InvalidTokenLogicLength)).input_type_script(1));
 }
 
 #[test]
@@ -2814,7 +2845,7 @@ fn transfer_token_logic_owner_invalid_token_logic_cell_dep()
 
 	// Execute the transaction.
 	let err = context.verify_tx(&tx, MAX_CYCLES).unwrap_err();
-	assert_error_eq!(err, ScriptError::ValidationFailure(Error::MissingTokenLogicCellDep as i8).input_type_script(1));
+	assert_error_eq!(err, ScriptError::ValidationFailure(i8::from(Error::MissingTokenLogicCellDep)).input_type_script(1));
 }
 
 #[test]
@@ -2846,7 +2877,7 @@ fn update_custom()
 		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
 		quantity: Some(10),
 		token_logic: Some(&token_logic_hash_null),
-		custom: Some("World Hello!"),
+		custom: Some("Hello Nervos!"),
 		lock_script: "lock-1",
 		governance_lock_script: "lock-5",
 	};
@@ -2904,7 +2935,7 @@ fn update_multiple()
 		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
 		quantity: Some(1),
 		token_logic: Some(&token_logic_hash_null),
-		custom: Some("World Hello!"),
+		custom: Some("Hello Nervos!"),
 		lock_script: "lock-2",
 		governance_lock_script: "lock-5",
 	};
@@ -3193,7 +3224,7 @@ fn update_multiple_owner()
 		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
 		quantity: Some(50),
 		token_logic: Some(&token_logic_hash_null),
-		custom: Some("World Hello!"),
+		custom: Some("Hello Nervos!"),
 		lock_script: "lock-1",
 		governance_lock_script: "lock-1",
 	};
@@ -3462,7 +3493,7 @@ fn update_quantity_invalid_quantity()
 
 	// Execute the transaction.
 	let err = context.verify_tx(&tx, MAX_CYCLES).unwrap_err();
-	assert_error_eq!(err, ScriptError::ValidationFailure(Error::InvalidQuantity as i8).input_type_script(0));
+	assert_error_eq!(err, ScriptError::ValidationFailure(i8::from(Error::InvalidQuantity)).input_type_script(0));
 }
 
 #[test]
@@ -3507,7 +3538,7 @@ fn update_quantity_invalid_quantity_length()
 
 	// Execute the transaction.
 	let err = context.verify_tx(&tx, MAX_CYCLES).unwrap_err();
-	assert_error_eq!(err, ScriptError::ValidationFailure(Error::InvalidQuantityLength as i8).input_type_script(0));
+	assert_error_eq!(err, ScriptError::ValidationFailure(i8::from(Error::InvalidQuantityLength)).input_type_script(0));
 }
 
 #[test]
@@ -3554,7 +3585,7 @@ fn update_token_logic_unauthorized()
 
 	// Execute the transaction.
 	let err = context.verify_tx(&tx, MAX_CYCLES).unwrap_err();
-	assert_error_eq!(err, ScriptError::ValidationFailure(Error::UnauthorizedOperation as i8).input_type_script(0));
+	assert_error_eq!(err, ScriptError::ValidationFailure(i8::from(Error::UnauthorizedOperation)).input_type_script(0));
 }
 
 #[test]
@@ -3612,7 +3643,7 @@ fn update_quantity_owner_invalid_quantity()
 
 	// Execute the transaction.
 	let err = context.verify_tx(&tx, MAX_CYCLES).unwrap_err();
-	assert_error_eq!(err, ScriptError::ValidationFailure(Error::InvalidQuantity as i8).input_type_script(0));
+	assert_error_eq!(err, ScriptError::ValidationFailure(i8::from(Error::InvalidQuantity)).input_type_script(0));
 }
 
 #[test]
@@ -3657,7 +3688,7 @@ fn update_quantity_owner_invalid_quantity_length()
 
 	// Execute the transaction.
 	let err = context.verify_tx(&tx, MAX_CYCLES).unwrap_err();
-	assert_error_eq!(err, ScriptError::ValidationFailure(Error::InvalidQuantityLength as i8).input_type_script(0));
+	assert_error_eq!(err, ScriptError::ValidationFailure(i8::from(Error::InvalidQuantityLength)).input_type_script(0));
 }
 
 #[test]
@@ -3704,7 +3735,7 @@ fn update_token_logic_owner_invalid_token_logic_cell_dep()
 
 	// Execute the transaction.
 	let err = context.verify_tx(&tx, MAX_CYCLES).unwrap_err();
-	assert_error_eq!(err, ScriptError::ValidationFailure(Error::MissingTokenLogicCellDep as i8).input_type_script(0));
+	assert_error_eq!(err, ScriptError::ValidationFailure(i8::from(Error::MissingTokenLogicCellDep)).input_type_script(0));
 }
 
 #[test]

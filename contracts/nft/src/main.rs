@@ -54,21 +54,21 @@ fn program_entry() -> i8
 	match main()
 	{
 		Ok(_) => 0,
-		Err(err) => err as i8,
+		Err(err) => i8::from(err),
 	}
 }
 
 /// Local error values.
 /// Low values are reserved for Sys Error codes.
-/// Values 100+ are for custom errors.
-#[repr(i8)]
+/// Values 10-49 are for custom errors codes.
+/// Values 50-127 are reserved for token logic error codes.
 enum Error
 {
-	IndexOutOfBound = 1,
+	IndexOutOfBound,
 	ItemMissing,
 	LengthNotEnough,
 	Encoding,
-	InvalidArgsLen = 100,
+	InvalidArgsLen,
 	InvalidInstanceId,
 	InvalidInstanceIdLength,
 	InvalidQuantity,
@@ -80,6 +80,36 @@ enum Error
 	MissingTokenLogicFunction,
 	UnauthorizedOperation,
 	UnexpectedCellMismatch,
+	UnexpectedTokenLogicErrorCode,
+	TokenLogicError(i8),
+}
+
+impl From<Error> for i8
+{
+	fn from(err: Error) -> Self
+	{
+		match err
+		{
+			Error::IndexOutOfBound => 1,
+			Error::ItemMissing => 2,
+			Error::LengthNotEnough => 3,
+			Error::Encoding => 4,
+			Error::InvalidArgsLen => 10,
+			Error::InvalidInstanceId => 11,
+			Error::InvalidInstanceIdLength => 12,
+			Error::InvalidQuantity => 13,
+			Error::InvalidQuantityLength => 14,
+			Error::InvalidStructure => 15,
+			Error::InvalidTokenLogicCellDep => 16,
+			Error::InvalidTokenLogicLength => 17,
+			Error::MissingTokenLogicCellDep => 18,
+			Error::MissingTokenLogicFunction => 19,
+			Error::UnauthorizedOperation => 20,
+			Error::UnexpectedCellMismatch => 21,
+			Error::UnexpectedTokenLogicErrorCode => 22,
+			Error::TokenLogicError(e) => e,
+		}
+	}
 }
 
 /// Map Sys Errors to local Error values.
@@ -306,10 +336,18 @@ fn execute_token_logic(token_logic_code_hash: &Vec<u8>) -> Result<(), Error>
 	{
 		type TokenLogic = unsafe extern "C" fn(token_logic_code_hash: &[u8; TOKEN_LOGIC_LEN]) -> i32;
 		let token_logic: Symbol<TokenLogic> = lib.get(TOKEN_LOGIC_FUNCTION).ok_or(Error::MissingTokenLogicFunction)?;
-		let token_logic_return_code = token_logic(&token_logic_code_hash);
-		if token_logic_return_code != 0
+		let token_logic_error_code = token_logic(&token_logic_code_hash);
+
+		if token_logic_error_code != 0
 		{
-			panic!("Token Logic Script returned code: {}", token_logic_return_code);
+			if token_logic_error_code < 50 || token_logic_error_code > 127
+			{
+				return Err(Error::UnexpectedTokenLogicErrorCode);
+			}
+			else
+			{
+				return Err(Error::TokenLogicError(token_logic_error_code as i8));
+			}
 		}
 	}
 
