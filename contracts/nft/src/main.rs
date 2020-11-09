@@ -588,6 +588,12 @@ fn main() -> Result<(), Error>
 	// 	token_logic_code_hashes_execute.append(&mut collect_executable_token_logic_hashes(&vec!(&group_input_nft_data))?);
 	// }
 
+	// Remove any duplicates in validate and execute, favoring execution.
+	for token_logic_code_hash in token_logic_code_hashes_execute.iter()
+	{
+		token_logic_code_hashes_validate.remove(token_logic_code_hash);
+	}
+
 	// Validate Token Logic.
 	for token_logic_code_hash in token_logic_code_hashes_validate.iter()
 	{
