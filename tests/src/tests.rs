@@ -5323,3 +5323,1841 @@ fn token_logic_reject_transfer_burn()
 	let _cycles = context.verify_tx(&tx, MAX_CYCLES).expect("pass verification");
 	// println!("Cycles: {}", cycles);
 }
+
+#[test]
+fn token_logic_approve_transfer_quantity_zero_owner()
+{
+	// Get defaults.
+	let (mut context, tx, resources) = build_default_context_and_resources();
+	let token_logic_hash_approve = resources.binary_hashes.get("token-logic-approve").unwrap();
+
+	// Prepare inputs.
+	let mut inputs = vec!();
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(10),
+		token_logic: Some(&token_logic_hash_approve),
+		custom: None,
+		lock_script: "lock-1",
+		governance_lock_script: "lock-1",
+	};
+	let input = create_input_nft_cell(&mut context, &resources, 4_000, &nft_cell_data);
+	inputs.push(input);
+
+	// Prepare outputs.
+	let mut outputs = vec!();
+	let mut outputs_data = vec!();
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(10),
+		token_logic: Some(&token_logic_hash_approve),
+		custom: None,
+		lock_script: "lock-1",
+		governance_lock_script: "lock-1",
+	};
+	let (output, output_data) = create_output_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	outputs.push(output);
+	outputs_data.push(output_data);
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(0),
+		token_logic: Some(&token_logic_hash_approve),
+		custom: None,
+		lock_script: "lock-3",
+		governance_lock_script: "lock-1",
+	};
+	let (output, output_data) = create_output_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	outputs.push(output);
+	outputs_data.push(output_data);
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(0),
+		token_logic: Some(&token_logic_hash_approve),
+		custom: None,
+		lock_script: "lock-3",
+		governance_lock_script: "lock-1",
+	};
+	let (output, output_data) = create_output_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	outputs.push(output);
+	outputs_data.push(output_data);
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(0),
+		token_logic: Some(&token_logic_hash_approve),
+		custom: None,
+		lock_script: "lock-3",
+		governance_lock_script: "lock-1",
+	};
+	let (output, output_data) = create_output_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	outputs.push(output);
+	outputs_data.push(output_data);
+
+	// Populate the transaction, build, and complete.
+	let tx = tx.inputs(inputs).outputs(outputs).outputs_data(outputs_data.pack()).build();
+	let tx = context.complete_tx(tx);
+
+	// Execute the transaction.
+	let _cycles = context.verify_tx(&tx, MAX_CYCLES).expect("pass verification");
+	// println!("Cycles: {}", cycles);
+}
+
+#[test]
+fn token_logic_approve_transfer_token_logic_owner()
+{
+	// Get defaults.
+	let (mut context, tx, resources) = build_default_context_and_resources();
+	let token_logic_hash_approve = resources.binary_hashes.get("token-logic-approve").unwrap();
+
+	// Prepare inputs.
+	let mut inputs = vec!();
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(10),
+		token_logic: Some(&token_logic_hash_approve),
+		custom: None,
+		lock_script: "lock-1",
+		governance_lock_script: "lock-1",
+	};
+	let input = create_input_nft_cell(&mut context, &resources, 2_000, &nft_cell_data);
+	inputs.push(input);
+
+	// Prepare outputs.
+	let mut outputs = vec!();
+	let mut outputs_data = vec!();
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(9),
+		token_logic: Some(&token_logic_hash_approve),
+		custom: None,
+		lock_script: "lock-1",
+		governance_lock_script: "lock-1",
+	};
+	let (output, output_data) = create_output_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	outputs.push(output);
+	outputs_data.push(output_data);
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(1),
+		token_logic: Some(&token_logic_hash_approve),
+		custom: None,
+		lock_script: "lock-3",
+		governance_lock_script: "lock-1",
+	};
+	let (output, output_data) = create_output_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	outputs.push(output);
+	outputs_data.push(output_data);
+
+	// Populate the transaction, build, and complete.
+	let tx = tx.inputs(inputs).outputs(outputs).outputs_data(outputs_data.pack()).build();
+	let tx = context.complete_tx(tx);
+
+	// Execute the transaction.
+	let _cycles = context.verify_tx(&tx, MAX_CYCLES).expect("pass verification");
+	// println!("Cycles: {}", cycles);
+}
+
+#[test]
+fn token_logic_approve_transfer_custom_owner()
+{
+	// Get defaults.
+	let (mut context, tx, resources) = build_default_context_and_resources();
+	let token_logic_hash_approve = resources.binary_hashes.get("token-logic-approve").unwrap();
+
+	// Prepare inputs.
+	let mut inputs = vec!();
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(10),
+		token_logic: Some(&token_logic_hash_approve),
+		custom: Some("Hello World!"),
+		lock_script: "lock-1",
+		governance_lock_script: "lock-1",
+	};
+	let input = create_input_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	inputs.push(input);
+
+	// Prepare outputs.
+	let mut outputs = vec!();
+	let mut outputs_data = vec!();
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(10),
+		token_logic: Some(&token_logic_hash_approve),
+		custom: Some("Hello World!"),
+		lock_script: "lock-2",
+		governance_lock_script: "lock-1",
+	};
+	let (output, output_data) = create_output_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	outputs.push(output);
+	outputs_data.push(output_data);
+
+	// Populate the transaction, build, and complete.
+	let tx = tx.inputs(inputs).outputs(outputs).outputs_data(outputs_data.pack()).build();
+	let tx = context.complete_tx(tx);
+
+	// Execute the transaction.
+	let _cycles = context.verify_tx(&tx, MAX_CYCLES).expect("pass verification");
+	// println!("Cycles: {}", cycles);
+}
+
+#[test]
+fn token_logic_approve_transfer_multiple_owner()
+{
+	// Get defaults.
+	let (mut context, tx, resources) = build_default_context_and_resources();
+	let token_logic_hash_approve = resources.binary_hashes.get("token-logic-approve").unwrap();
+	
+	// Prepare inputs.
+	let mut inputs = vec!();
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(10),
+		token_logic: Some(&token_logic_hash_approve),
+		custom: Some("Hello World!"),
+		lock_script: "lock-1",
+		governance_lock_script: "lock-1",
+	};
+	let input = create_input_nft_cell(&mut context, &resources, 3_000, &nft_cell_data);
+	inputs.push(input);
+
+	// Prepare outputs.
+	let mut outputs = vec!();
+	let mut outputs_data = vec!();
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(8),
+		token_logic: Some(&token_logic_hash_approve),
+		custom: Some("Hello World!"),
+		lock_script: "lock-1",
+		governance_lock_script: "lock-1",
+	};
+	let (output, output_data) = create_output_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	outputs.push(output);
+	outputs_data.push(output_data);
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(1),
+		token_logic: Some(&token_logic_hash_approve),
+		custom: Some("Hello World!"),
+		lock_script: "lock-2",
+		governance_lock_script: "lock-1",
+	};
+	let (output, output_data) = create_output_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	outputs.push(output);
+	outputs_data.push(output_data);
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(1),
+		token_logic: Some(&token_logic_hash_approve),
+		custom: Some("Hello World!"),
+		lock_script: "lock-3",
+		governance_lock_script: "lock-1",
+	};
+	let (output, output_data) = create_output_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	outputs.push(output);
+	outputs_data.push(output_data);
+
+	// Populate the transaction, build, and complete.
+	let tx = tx.inputs(inputs).outputs(outputs).outputs_data(outputs_data.pack()).build();
+	let tx = context.complete_tx(tx);
+
+	// Execute the transaction.
+	let _cycles = context.verify_tx(&tx, MAX_CYCLES).expect("pass verification");
+	// println!("Cycles: {}", cycles);
+}
+
+#[test]
+fn token_logic_approve_transfer_burn_owner()
+{
+	// Get defaults.
+	let (mut context, tx, resources) = build_default_context_and_resources();
+	let token_logic_hash_approve = resources.binary_hashes.get("token-logic-approve").unwrap();
+
+	// Prepare inputs.
+	let mut inputs = vec!();
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(10),
+		token_logic: Some(&token_logic_hash_approve),
+		custom: None,
+		lock_script: "lock-1",
+		governance_lock_script: "lock-1",
+	};
+	let input = create_input_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	inputs.push(input);
+
+	// Prepare outputs.
+	let mut outputs = vec!();
+	let mut outputs_data = vec!();
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(9),
+		token_logic: Some(&token_logic_hash_approve),
+		custom: None,
+		lock_script: "lock-2",
+		governance_lock_script: "lock-1",
+	};
+	let (output, output_data) = create_output_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	outputs.push(output);
+	outputs_data.push(output_data);
+
+	// Populate the transaction, build, and complete.
+	let tx = tx.inputs(inputs).outputs(outputs).outputs_data(outputs_data.pack()).build();
+	let tx = context.complete_tx(tx);
+
+	// Execute the transaction.
+	let _cycles = context.verify_tx(&tx, MAX_CYCLES).expect("pass verification");
+	// println!("Cycles: {}", cycles);
+}
+
+#[test]
+fn token_logic_reject_transfer_quantity_zero_owner()
+{
+	// Get defaults.
+	let (mut context, tx, resources) = build_default_context_and_resources();
+	let token_logic_hash_reject = resources.binary_hashes.get("token-logic-reject").unwrap();
+
+	// Prepare inputs.
+	let mut inputs = vec!();
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(10),
+		token_logic: Some(&token_logic_hash_reject),
+		custom: None,
+		lock_script: "lock-1",
+		governance_lock_script: "lock-1",
+	};
+	let input = create_input_nft_cell(&mut context, &resources, 4_000, &nft_cell_data);
+	inputs.push(input);
+
+	// Prepare outputs.
+	let mut outputs = vec!();
+	let mut outputs_data = vec!();
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(10),
+		token_logic: Some(&token_logic_hash_reject),
+		custom: None,
+		lock_script: "lock-1",
+		governance_lock_script: "lock-1",
+	};
+	let (output, output_data) = create_output_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	outputs.push(output);
+	outputs_data.push(output_data);
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(0),
+		token_logic: Some(&token_logic_hash_reject),
+		custom: None,
+		lock_script: "lock-3",
+		governance_lock_script: "lock-1",
+	};
+	let (output, output_data) = create_output_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	outputs.push(output);
+	outputs_data.push(output_data);
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(0),
+		token_logic: Some(&token_logic_hash_reject),
+		custom: None,
+		lock_script: "lock-3",
+		governance_lock_script: "lock-1",
+	};
+	let (output, output_data) = create_output_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	outputs.push(output);
+	outputs_data.push(output_data);
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(0),
+		token_logic: Some(&token_logic_hash_reject),
+		custom: None,
+		lock_script: "lock-3",
+		governance_lock_script: "lock-1",
+	};
+	let (output, output_data) = create_output_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	outputs.push(output);
+	outputs_data.push(output_data);
+
+	// Populate the transaction, build, and complete.
+	let tx = tx.inputs(inputs).outputs(outputs).outputs_data(outputs_data.pack()).build();
+	let tx = context.complete_tx(tx);
+
+	// Execute the transaction.
+	let _cycles = context.verify_tx(&tx, MAX_CYCLES).expect("pass verification");
+	// println!("Cycles: {}", cycles);
+}
+
+#[test]
+fn token_logic_reject_transfer_token_logic_owner()
+{
+	// Get defaults.
+	let (mut context, tx, resources) = build_default_context_and_resources();
+	let token_logic_hash_reject = resources.binary_hashes.get("token-logic-reject").unwrap();
+
+	// Prepare inputs.
+	let mut inputs = vec!();
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(10),
+		token_logic: Some(&token_logic_hash_reject),
+		custom: None,
+		lock_script: "lock-1",
+		governance_lock_script: "lock-1",
+	};
+	let input = create_input_nft_cell(&mut context, &resources, 2_000, &nft_cell_data);
+	inputs.push(input);
+
+	// Prepare outputs.
+	let mut outputs = vec!();
+	let mut outputs_data = vec!();
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(9),
+		token_logic: Some(&token_logic_hash_reject),
+		custom: None,
+		lock_script: "lock-1",
+		governance_lock_script: "lock-1",
+	};
+	let (output, output_data) = create_output_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	outputs.push(output);
+	outputs_data.push(output_data);
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(1),
+		token_logic: Some(&token_logic_hash_reject),
+		custom: None,
+		lock_script: "lock-3",
+		governance_lock_script: "lock-1",
+	};
+	let (output, output_data) = create_output_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	outputs.push(output);
+	outputs_data.push(output_data);
+
+	// Populate the transaction, build, and complete.
+	let tx = tx.inputs(inputs).outputs(outputs).outputs_data(outputs_data.pack()).build();
+	let tx = context.complete_tx(tx);
+
+	// Execute the transaction.
+	let _cycles = context.verify_tx(&tx, MAX_CYCLES).expect("pass verification");
+	// println!("Cycles: {}", cycles);
+}
+
+#[test]
+fn token_logic_reject_transfer_custom_owner()
+{
+	// Get defaults.
+	let (mut context, tx, resources) = build_default_context_and_resources();
+	let token_logic_hash_reject = resources.binary_hashes.get("token-logic-reject").unwrap();
+
+	// Prepare inputs.
+	let mut inputs = vec!();
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(10),
+		token_logic: Some(&token_logic_hash_reject),
+		custom: Some("Hello World!"),
+		lock_script: "lock-1",
+		governance_lock_script: "lock-1",
+	};
+	let input = create_input_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	inputs.push(input);
+
+	// Prepare outputs.
+	let mut outputs = vec!();
+	let mut outputs_data = vec!();
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(10),
+		token_logic: Some(&token_logic_hash_reject),
+		custom: Some("Hello World!"),
+		lock_script: "lock-2",
+		governance_lock_script: "lock-1",
+	};
+	let (output, output_data) = create_output_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	outputs.push(output);
+	outputs_data.push(output_data);
+
+	// Populate the transaction, build, and complete.
+	let tx = tx.inputs(inputs).outputs(outputs).outputs_data(outputs_data.pack()).build();
+	let tx = context.complete_tx(tx);
+
+	// Execute the transaction.
+	let _cycles = context.verify_tx(&tx, MAX_CYCLES).expect("pass verification");
+	// println!("Cycles: {}", cycles);
+}
+
+#[test]
+fn token_logic_reject_transfer_multiple_owner()
+{
+	// Get defaults.
+	let (mut context, tx, resources) = build_default_context_and_resources();
+	let token_logic_hash_reject = resources.binary_hashes.get("token-logic-reject").unwrap();
+	
+	// Prepare inputs.
+	let mut inputs = vec!();
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(10),
+		token_logic: Some(&token_logic_hash_reject),
+		custom: Some("Hello World!"),
+		lock_script: "lock-1",
+		governance_lock_script: "lock-1",
+	};
+	let input = create_input_nft_cell(&mut context, &resources, 3_000, &nft_cell_data);
+	inputs.push(input);
+
+	// Prepare outputs.
+	let mut outputs = vec!();
+	let mut outputs_data = vec!();
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(8),
+		token_logic: Some(&token_logic_hash_reject),
+		custom: Some("Hello World!"),
+		lock_script: "lock-1",
+		governance_lock_script: "lock-1",
+	};
+	let (output, output_data) = create_output_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	outputs.push(output);
+	outputs_data.push(output_data);
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(1),
+		token_logic: Some(&token_logic_hash_reject),
+		custom: Some("Hello World!"),
+		lock_script: "lock-2",
+		governance_lock_script: "lock-1",
+	};
+	let (output, output_data) = create_output_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	outputs.push(output);
+	outputs_data.push(output_data);
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(1),
+		token_logic: Some(&token_logic_hash_reject),
+		custom: Some("Hello World!"),
+		lock_script: "lock-3",
+		governance_lock_script: "lock-1",
+	};
+	let (output, output_data) = create_output_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	outputs.push(output);
+	outputs_data.push(output_data);
+
+	// Populate the transaction, build, and complete.
+	let tx = tx.inputs(inputs).outputs(outputs).outputs_data(outputs_data.pack()).build();
+	let tx = context.complete_tx(tx);
+
+	// Execute the transaction.
+	let _cycles = context.verify_tx(&tx, MAX_CYCLES).expect("pass verification");
+	// println!("Cycles: {}", cycles);
+}
+
+#[test]
+fn token_logic_reject_transfer_burn_owner()
+{
+	// Get defaults.
+	let (mut context, tx, resources) = build_default_context_and_resources();
+	let token_logic_hash_reject = resources.binary_hashes.get("token-logic-reject").unwrap();
+
+	// Prepare inputs.
+	let mut inputs = vec!();
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(10),
+		token_logic: Some(&token_logic_hash_reject),
+		custom: None,
+		lock_script: "lock-1",
+		governance_lock_script: "lock-1",
+	};
+	let input = create_input_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	inputs.push(input);
+
+	// Prepare outputs.
+	let mut outputs = vec!();
+	let mut outputs_data = vec!();
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(9),
+		token_logic: Some(&token_logic_hash_reject),
+		custom: None,
+		lock_script: "lock-2",
+		governance_lock_script: "lock-1",
+	};
+	let (output, output_data) = create_output_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	outputs.push(output);
+	outputs_data.push(output_data);
+
+	// Populate the transaction, build, and complete.
+	let tx = tx.inputs(inputs).outputs(outputs).outputs_data(outputs_data.pack()).build();
+	let tx = context.complete_tx(tx);
+
+	// Execute the transaction.
+	let _cycles = context.verify_tx(&tx, MAX_CYCLES).expect("pass verification");
+	// println!("Cycles: {}", cycles);
+}
+
+#[test]
+fn token_logic_approve_update_custom()
+{
+	// Get defaults.
+	let (mut context, tx, resources) = build_default_context_and_resources();
+	let token_logic_hash_approve = resources.binary_hashes.get("token-logic-approve").unwrap();
+
+	// Prepare inputs.
+	let mut inputs = vec!();
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(10),
+		token_logic: Some(&token_logic_hash_approve),
+		custom: Some("Hello World!"),
+		lock_script: "lock-1",
+		governance_lock_script: "lock-5",
+	};
+	let input = create_input_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	inputs.push(input);
+
+	// Prepare outputs.
+	let mut outputs = vec!();
+	let mut outputs_data = vec!();
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(10),
+		token_logic: Some(&token_logic_hash_approve),
+		custom: Some("Hello Nervos!"),
+		lock_script: "lock-1",
+		governance_lock_script: "lock-5",
+	};
+	let (output, output_data) = create_output_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	outputs.push(output);
+	outputs_data.push(output_data);
+
+	// Populate the transaction, build, and complete.
+	let tx = tx.inputs(inputs).outputs(outputs).outputs_data(outputs_data.pack()).build();
+	let tx = context.complete_tx(tx);
+
+	// Execute the transaction.
+	let _cycles = context.verify_tx(&tx, MAX_CYCLES).expect("pass verification");
+	// println!("Cycles: {}", cycles);
+}
+
+#[test]
+fn token_logic_approve_update_token_logic()
+{
+	// Get defaults.
+	let (mut context, tx, resources) = build_default_context_and_resources();
+	let token_logic_hash_approve = resources.binary_hashes.get("token-logic-approve").unwrap();
+	let token_logic_hash_null = hex::encode(CODE_HASH_NULL);
+
+	// Prepare inputs.
+	let mut inputs = vec!();
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(10),
+		token_logic: Some(&token_logic_hash_approve),
+		custom: Some("Hello World!"),
+		lock_script: "lock-1",
+		governance_lock_script: "lock-5",
+	};
+	let input = create_input_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	inputs.push(input);
+
+	// Prepare outputs.
+	let mut outputs = vec!();
+	let mut outputs_data = vec!();
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(10),
+		token_logic: Some(&token_logic_hash_null),
+		custom: Some("Hello World!"),
+		lock_script: "lock-1",
+		governance_lock_script: "lock-5",
+	};
+	let (output, output_data) = create_output_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	outputs.push(output);
+	outputs_data.push(output_data);
+
+	// Populate the transaction, build, and complete.
+	let tx = tx.inputs(inputs).outputs(outputs).outputs_data(outputs_data.pack()).build();
+	let tx = context.complete_tx(tx);
+
+	// Execute the transaction.
+	let err = context.verify_tx(&tx, MAX_CYCLES).unwrap_err();
+	assert_error_eq!(err, ScriptError::ValidationFailure(i8::from(Error::UnauthorizedOperation)).input_type_script(0));
+}
+
+#[test]
+fn token_logic_approve_update_multiple()
+{
+	// Get defaults.
+	let (mut context, tx, resources) = build_default_context_and_resources();
+	let token_logic_hash_approve = resources.binary_hashes.get("token-logic-approve").unwrap();
+
+	// Prepare inputs.
+	let mut inputs = vec!();
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(10),
+		token_logic: Some(&token_logic_hash_approve),
+		custom: Some("Hello World!"),
+		lock_script: "lock-1",
+		governance_lock_script: "lock-5",
+	};
+	let input = create_input_nft_cell(&mut context, &resources, 3_000, &nft_cell_data);
+	inputs.push(input);
+
+	// Prepare outputs.
+	let mut outputs = vec!();
+	let mut outputs_data = vec!();
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(8),
+		token_logic: Some(&token_logic_hash_approve),
+		custom: Some("Hello World!"),
+		lock_script: "lock-1",
+		governance_lock_script: "lock-5",
+	};
+	let (output, output_data) = create_output_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	outputs.push(output);
+	outputs_data.push(output_data);
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(1),
+		token_logic: Some(&token_logic_hash_approve),
+		custom: Some("Hello Nervos!"),
+		lock_script: "lock-2",
+		governance_lock_script: "lock-5",
+	};
+	let (output, output_data) = create_output_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	outputs.push(output);
+	outputs_data.push(output_data);
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(1),
+		token_logic: Some(&token_logic_hash_approve),
+		custom: Some("Hello CKB!"),
+		lock_script: "lock-3",
+		governance_lock_script: "lock-5",
+	};
+	let (output, output_data) = create_output_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	outputs.push(output);
+	outputs_data.push(output_data);
+
+	// Populate the transaction, build, and complete.
+	let tx = tx.inputs(inputs).outputs(outputs).outputs_data(outputs_data.pack()).build();
+	let tx = context.complete_tx(tx);
+
+	// Execute the transaction.
+	let _cycles = context.verify_tx(&tx, MAX_CYCLES).expect("pass verification");
+	// println!("Cycles: {}", cycles);
+}
+
+#[test]
+fn token_logic_approve_update_custom_owner()
+{
+	// Get defaults.
+	let (mut context, tx, resources) = build_default_context_and_resources();
+	let token_logic_hash_approve = resources.binary_hashes.get("token-logic-approve").unwrap();
+
+	// Prepare inputs.
+	let mut inputs = vec!();
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(10),
+		token_logic: Some(&token_logic_hash_approve),
+		custom: Some("Hello World!"),
+		lock_script: "lock-1",
+		governance_lock_script: "lock-1",
+	};
+	let input = create_input_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	inputs.push(input);
+
+	// Prepare outputs.
+	let mut outputs = vec!();
+	let mut outputs_data = vec!();
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(10),
+		token_logic: Some(&token_logic_hash_approve),
+		custom: Some("Hello Nervos!"),
+		lock_script: "lock-1",
+		governance_lock_script: "lock-1",
+	};
+	let (output, output_data) = create_output_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	outputs.push(output);
+	outputs_data.push(output_data);
+
+	// Populate the transaction, build, and complete.
+	let tx = tx.inputs(inputs).outputs(outputs).outputs_data(outputs_data.pack()).build();
+	let tx = context.complete_tx(tx);
+
+	// Execute the transaction.
+	let _cycles = context.verify_tx(&tx, MAX_CYCLES).expect("pass verification");
+	// println!("Cycles: {}", cycles);
+}
+
+#[test]
+fn token_logic_approve_update_token_logic_owner()
+{
+	// Get defaults.
+	let (mut context, tx, resources) = build_default_context_and_resources();
+	let token_logic_hash_approve = resources.binary_hashes.get("token-logic-approve").unwrap();
+	let token_logic_hash_null = hex::encode(CODE_HASH_NULL);
+
+	// Prepare inputs.
+	let mut inputs = vec!();
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(10),
+		token_logic: Some(&token_logic_hash_approve),
+		custom: Some("Hello World!"),
+		lock_script: "lock-1",
+		governance_lock_script: "lock-1",
+	};
+	let input = create_input_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	inputs.push(input);
+
+	// Prepare outputs.
+	let mut outputs = vec!();
+	let mut outputs_data = vec!();
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(10),
+		token_logic: Some(&token_logic_hash_null),
+		custom: Some("Hello World!"),
+		lock_script: "lock-1",
+		governance_lock_script: "lock-1",
+	};
+	let (output, output_data) = create_output_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	outputs.push(output);
+	outputs_data.push(output_data);
+
+	// Populate the transaction, build, and complete.
+	let tx = tx.inputs(inputs).outputs(outputs).outputs_data(outputs_data.pack()).build();
+	let tx = context.complete_tx(tx);
+
+	// Execute the transaction.
+	let _cycles = context.verify_tx(&tx, MAX_CYCLES).expect("pass verification");
+	// println!("Cycles: {}", cycles);
+}
+
+#[test]
+fn token_logic_approve_update_multiple_owner()
+{
+	// Get defaults.
+	let (mut context, tx, resources) = build_default_context_and_resources();
+	let token_logic_hash_approve = resources.binary_hashes.get("token-logic-approve").unwrap();
+
+	// Prepare inputs.
+	let mut inputs = vec!();
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(10),
+		token_logic: Some(&token_logic_hash_approve),
+		custom: Some("Hello World!"),
+		lock_script: "lock-1",
+		governance_lock_script: "lock-1",
+	};
+	let input = create_input_nft_cell(&mut context, &resources, 3_000, &nft_cell_data);
+	inputs.push(input);
+
+	// Prepare outputs.
+	let mut outputs = vec!();
+	let mut outputs_data = vec!();
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(8),
+		token_logic: Some(&token_logic_hash_approve),
+		custom: Some("Hello World!"),
+		lock_script: "lock-1",
+		governance_lock_script: "lock-1",
+	};
+	let (output, output_data) = create_output_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	outputs.push(output);
+	outputs_data.push(output_data);
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(1),
+		token_logic: Some(&token_logic_hash_approve),
+		custom: Some("Hello Nervos!"),
+		lock_script: "lock-2",
+		governance_lock_script: "lock-1",
+	};
+	let (output, output_data) = create_output_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	outputs.push(output);
+	outputs_data.push(output_data);
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(1),
+		token_logic: Some(&token_logic_hash_approve),
+		custom: Some("Hello CKB!"),
+		lock_script: "lock-3",
+		governance_lock_script: "lock-1",
+	};
+	let (output, output_data) = create_output_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	outputs.push(output);
+	outputs_data.push(output_data);
+
+	// Populate the transaction, build, and complete.
+	let tx = tx.inputs(inputs).outputs(outputs).outputs_data(outputs_data.pack()).build();
+	let tx = context.complete_tx(tx);
+
+	// Execute the transaction.
+	let _cycles = context.verify_tx(&tx, MAX_CYCLES).expect("pass verification");
+	// println!("Cycles: {}", cycles);
+}
+
+#[test]
+fn token_logic_approve_update_token_logic_owner_invalid_cell_dep()
+{
+	// Get defaults.
+	let (mut context, tx, resources) = build_default_context_and_resources();
+	let token_logic_hash_approve = resources.binary_hashes.get("token-logic-approve").unwrap();
+	let token_logic_hash_invalid = hex::encode("1111111111111111111111111111111111111111111111111111111111111111");
+
+	// Prepare inputs.
+	let mut inputs = vec!();
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(100),
+		token_logic: Some(&token_logic_hash_approve),
+		custom: None,
+		lock_script: "lock-1",
+		governance_lock_script: "lock-1",
+	};
+	let input = create_input_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	inputs.push(input);
+
+	// Prepare outputs.
+	let mut outputs = vec!();
+	let mut outputs_data = vec!();
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(100),
+		token_logic: Some(&token_logic_hash_invalid),
+		custom: None,
+		lock_script: "lock-1",
+		governance_lock_script: "lock-1",
+	};
+	let (output, output_data) = create_output_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	outputs.push(output);
+	outputs_data.push(output_data);
+
+	// Populate the transaction, build, and complete.
+	let tx = tx.inputs(inputs).outputs(outputs).outputs_data(outputs_data.pack()).build();
+	let tx = context.complete_tx(tx);
+
+	// Execute the transaction.
+	let err = context.verify_tx(&tx, MAX_CYCLES).unwrap_err();
+	assert_error_eq!(err, ScriptError::ValidationFailure(i8::from(Error::MissingTokenLogicCellDep)).input_type_script(0));
+}
+
+#[test]
+fn token_logic_approve_update_token_logic_owner_invalid_cell_dep_removal()
+{
+	// Get defaults.
+	let (mut context, tx, resources) = build_default_context_and_resources();
+	let token_logic_hash_approve = resources.binary_hashes.get("token-logic-approve").unwrap();
+	let token_logic_hash_invalid = hex::encode("1111111111111111111111111111111111111111111111111111111111111111");
+
+	// Prepare inputs.
+	let mut inputs = vec!();
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(100),
+		token_logic: Some(&token_logic_hash_invalid),
+		custom: None,
+		lock_script: "lock-1",
+		governance_lock_script: "lock-1",
+	};
+	let input = create_input_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	inputs.push(input);
+
+	// Prepare outputs.
+	let mut outputs = vec!();
+	let mut outputs_data = vec!();
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(100),
+		token_logic: Some(&token_logic_hash_approve),
+		custom: None,
+		lock_script: "lock-1",
+		governance_lock_script: "lock-1",
+	};
+	let (output, output_data) = create_output_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	outputs.push(output);
+	outputs_data.push(output_data);
+
+	// Populate the transaction, build, and complete.
+	let tx = tx.inputs(inputs).outputs(outputs).outputs_data(outputs_data.pack()).build();
+	let tx = context.complete_tx(tx);
+
+	// Execute the transaction.
+	let _cycles = context.verify_tx(&tx, MAX_CYCLES).expect("pass verification");
+	// println!("Cycles: {}", cycles);
+}
+
+#[test]
+fn token_logic_reject_update_token_logic_owner_invalid_cell_dep()
+{
+	// Get defaults.
+	let (mut context, tx, resources) = build_default_context_and_resources();
+	let token_logic_hash_reject = resources.binary_hashes.get("token-logic-reject").unwrap();
+	let token_logic_hash_invalid = hex::encode("1111111111111111111111111111111111111111111111111111111111111111");
+
+	// Prepare inputs.
+	let mut inputs = vec!();
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(100),
+		token_logic: Some(&token_logic_hash_reject),
+		custom: None,
+		lock_script: "lock-1",
+		governance_lock_script: "lock-1",
+	};
+	let input = create_input_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	inputs.push(input);
+
+	// Prepare outputs.
+	let mut outputs = vec!();
+	let mut outputs_data = vec!();
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(100),
+		token_logic: Some(&token_logic_hash_invalid),
+		custom: None,
+		lock_script: "lock-1",
+		governance_lock_script: "lock-1",
+	};
+	let (output, output_data) = create_output_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	outputs.push(output);
+	outputs_data.push(output_data);
+
+	// Populate the transaction, build, and complete.
+	let tx = tx.inputs(inputs).outputs(outputs).outputs_data(outputs_data.pack()).build();
+	let tx = context.complete_tx(tx);
+
+	// Execute the transaction.
+	let err = context.verify_tx(&tx, MAX_CYCLES).unwrap_err();
+	assert_error_eq!(err, ScriptError::ValidationFailure(i8::from(Error::MissingTokenLogicCellDep)).input_type_script(0));
+}
+
+#[test]
+fn token_logic_reject_update_token_logic_owner_invalid_cell_dep_removal()
+{
+	// Get defaults.
+	let (mut context, tx, resources) = build_default_context_and_resources();
+	let token_logic_hash_reject = resources.binary_hashes.get("token-logic-reject").unwrap();
+	let token_logic_hash_invalid = hex::encode("1111111111111111111111111111111111111111111111111111111111111111");
+
+	// Prepare inputs.
+	let mut inputs = vec!();
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(100),
+		token_logic: Some(&token_logic_hash_invalid),
+		custom: None,
+		lock_script: "lock-1",
+		governance_lock_script: "lock-1",
+	};
+	let input = create_input_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	inputs.push(input);
+
+	// Prepare outputs.
+	let mut outputs = vec!();
+	let mut outputs_data = vec!();
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(100),
+		token_logic: Some(&token_logic_hash_reject),
+		custom: None,
+		lock_script: "lock-1",
+		governance_lock_script: "lock-1",
+	};
+	let (output, output_data) = create_output_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	outputs.push(output);
+	outputs_data.push(output_data);
+
+	// Populate the transaction, build, and complete.
+	let tx = tx.inputs(inputs).outputs(outputs).outputs_data(outputs_data.pack()).build();
+	let tx = context.complete_tx(tx);
+
+	// Execute the transaction.
+	let _cycles = context.verify_tx(&tx, MAX_CYCLES).expect("pass verification");
+	// println!("Cycles: {}", cycles);
+}
+
+#[test]
+fn token_logic_approve_burn_quantity_zero()
+{
+	// Get defaults.
+	let (mut context, tx, resources) = build_default_context_and_resources();
+	let token_logic_hash_approve = resources.binary_hashes.get("token-logic-approve").unwrap();
+
+	// Prepare inputs.
+	let mut inputs = vec!();
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(0),
+		token_logic: Some(&token_logic_hash_approve),
+		custom: None,
+		lock_script: "lock-1",
+		governance_lock_script: "lock-5",
+	};
+	let input = create_input_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	inputs.push(input);
+
+	// Prepare outputs.
+	let outputs: Vec<CellOutput> = vec!();
+	let outputs_data: Vec<Bytes> = vec!();
+
+	// Populate the transaction, build, and complete.
+	let tx = tx.inputs(inputs).outputs(outputs).outputs_data(outputs_data.pack()).build();
+	let tx = context.complete_tx(tx);
+
+	// Execute the transaction.
+	let _cycles = context.verify_tx(&tx, MAX_CYCLES).expect("pass verification");
+	// println!("Cycles: {}", cycles);
+}
+
+#[test]
+fn token_logic_approve_burn_token_logic()
+{
+	// Get defaults.
+	let (mut context, tx, resources) = build_default_context_and_resources();
+	let token_logic_hash_approve = resources.binary_hashes.get("token-logic-approve").unwrap();
+
+	// Prepare inputs.
+	let mut inputs = vec!();
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(10),
+		token_logic: Some(&token_logic_hash_approve),
+		custom: None,
+		lock_script: "lock-1",
+		governance_lock_script: "lock-5",
+	};
+	let input = create_input_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	inputs.push(input);
+
+	// Prepare outputs.
+	let outputs: Vec<CellOutput> = vec!();
+	let outputs_data: Vec<Bytes> = vec!();
+
+	// Populate the transaction, build, and complete.
+	let tx = tx.inputs(inputs).outputs(outputs).outputs_data(outputs_data.pack()).build();
+	let tx = context.complete_tx(tx);
+
+	// Execute the transaction.
+	let _cycles = context.verify_tx(&tx, MAX_CYCLES).expect("pass verification");
+	// println!("Cycles: {}", cycles);
+}
+
+#[test]
+fn token_logic_approve_burn_custom()
+{
+	// Get defaults.
+	let (mut context, tx, resources) = build_default_context_and_resources();
+	let token_logic_hash_approve = resources.binary_hashes.get("token-logic-approve").unwrap();
+
+	// Prepare inputs.
+	let mut inputs = vec!();
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(10),
+		token_logic: Some(&token_logic_hash_approve),
+		custom: Some("Hello World!"),
+		lock_script: "lock-1",
+		governance_lock_script: "lock-5",
+	};
+	let input = create_input_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	inputs.push(input);
+
+	// Prepare outputs.
+	let outputs: Vec<CellOutput> = vec!();
+	let outputs_data: Vec<Bytes> = vec!();
+
+	// Populate the transaction, build, and complete.
+	let tx = tx.inputs(inputs).outputs(outputs).outputs_data(outputs_data.pack()).build();
+	let tx = context.complete_tx(tx);
+
+	// Execute the transaction.
+	let _cycles = context.verify_tx(&tx, MAX_CYCLES).expect("pass verification");
+	// println!("Cycles: {}", cycles);
+}
+
+#[test]
+fn token_logic_approve_burn_multiple()
+{
+	// Get defaults.
+	let (mut context, tx, resources) = build_default_context_and_resources();
+	let token_logic_hash_approve = resources.binary_hashes.get("token-logic-approve").unwrap();
+
+	// Prepare inputs.
+	let mut inputs = vec!();
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(10),
+		token_logic: Some(&token_logic_hash_approve),
+		custom: Some("Hello World!"),
+		lock_script: "lock-1",
+		governance_lock_script: "lock-5",
+	};
+	let input = create_input_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	inputs.push(input);
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(10),
+		token_logic: Some(&token_logic_hash_approve),
+		custom: None,
+		lock_script: "lock-1",
+		governance_lock_script: "lock-5",
+	};
+	let input = create_input_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	inputs.push(input);
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(0),
+		token_logic: Some(&token_logic_hash_approve),
+		custom: None,
+		lock_script: "lock-1",
+		governance_lock_script: "lock-5",
+	};
+	let input = create_input_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	inputs.push(input);
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: None,
+		token_logic: None,
+		custom: None,
+		lock_script: "lock-1",
+		governance_lock_script: "lock-5",
+	};
+	let input = create_input_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	inputs.push(input);
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(0),
+		token_logic: None,
+		custom: None,
+		lock_script: "lock-1",
+		governance_lock_script: "lock-5",
+	};
+	let input = create_input_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	inputs.push(input);
+
+	// Prepare outputs.
+	let outputs: Vec<CellOutput> = vec!();
+	let outputs_data: Vec<Bytes> = vec!();
+
+	// Populate the transaction, build, and complete.
+	let tx = tx.inputs(inputs).outputs(outputs).outputs_data(outputs_data.pack()).build();
+	let tx = context.complete_tx(tx);
+
+	// Execute the transaction.
+	let _cycles = context.verify_tx(&tx, MAX_CYCLES).expect("pass verification");
+	// println!("Cycles: {}", cycles);
+}
+
+#[test]
+fn token_logic_approve_burn_quantity_zero_owner()
+{
+	// Get defaults.
+	let (mut context, tx, resources) = build_default_context_and_resources();
+	let token_logic_hash_approve = resources.binary_hashes.get("token-logic-approve").unwrap();
+
+	// Prepare inputs.
+	let mut inputs = vec!();
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(0),
+		token_logic: Some(&token_logic_hash_approve),
+		custom: None,
+		lock_script: "lock-1",
+		governance_lock_script: "lock-1",
+	};
+	let input = create_input_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	inputs.push(input);
+
+	// Prepare outputs.
+	let outputs: Vec<CellOutput> = vec!();
+	let outputs_data: Vec<Bytes> = vec!();
+
+	// Populate the transaction, build, and complete.
+	let tx = tx.inputs(inputs).outputs(outputs).outputs_data(outputs_data.pack()).build();
+	let tx = context.complete_tx(tx);
+
+	// Execute the transaction.
+	let _cycles = context.verify_tx(&tx, MAX_CYCLES).expect("pass verification");
+	// println!("Cycles: {}", cycles);
+}
+
+#[test]
+fn token_logic_approve_burn_token_logic_owner()
+{
+	// Get defaults.
+	let (mut context, tx, resources) = build_default_context_and_resources();
+	let token_logic_hash_approve = resources.binary_hashes.get("token-logic-approve").unwrap();
+
+	// Prepare inputs.
+	let mut inputs = vec!();
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(10),
+		token_logic: Some(&token_logic_hash_approve),
+		custom: None,
+		lock_script: "lock-1",
+		governance_lock_script: "lock-1",
+	};
+	let input = create_input_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	inputs.push(input);
+
+	// Prepare outputs.
+	let outputs: Vec<CellOutput> = vec!();
+	let outputs_data: Vec<Bytes> = vec!();
+
+	// Populate the transaction, build, and complete.
+	let tx = tx.inputs(inputs).outputs(outputs).outputs_data(outputs_data.pack()).build();
+	let tx = context.complete_tx(tx);
+
+	// Execute the transaction.
+	let _cycles = context.verify_tx(&tx, MAX_CYCLES).expect("pass verification");
+	// println!("Cycles: {}", cycles);
+}
+
+#[test]
+fn token_logic_approve_burn_custom_owner()
+{
+	// Get defaults.
+	let (mut context, tx, resources) = build_default_context_and_resources();
+	let token_logic_hash_approve = resources.binary_hashes.get("token-logic-approve").unwrap();
+
+	// Prepare inputs.
+	let mut inputs = vec!();
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(10),
+		token_logic: Some(&token_logic_hash_approve),
+		custom: Some("Hello World!"),
+		lock_script: "lock-1",
+		governance_lock_script: "lock-1",
+	};
+	let input = create_input_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	inputs.push(input);
+
+	// Prepare outputs.
+	let outputs: Vec<CellOutput> = vec!();
+	let outputs_data: Vec<Bytes> = vec!();
+
+	// Populate the transaction, build, and complete.
+	let tx = tx.inputs(inputs).outputs(outputs).outputs_data(outputs_data.pack()).build();
+	let tx = context.complete_tx(tx);
+
+	// Execute the transaction.
+	let _cycles = context.verify_tx(&tx, MAX_CYCLES).expect("pass verification");
+	// println!("Cycles: {}", cycles);
+}
+
+#[test]
+fn token_logic_approve_burn_multiple_owner()
+{
+	// Get defaults.
+	let (mut context, tx, resources) = build_default_context_and_resources();
+	let token_logic_hash_approve = resources.binary_hashes.get("token-logic-approve").unwrap();
+
+	// Prepare inputs.
+	let mut inputs = vec!();
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(10),
+		token_logic: Some(&token_logic_hash_approve),
+		custom: Some("Hello World!"),
+		lock_script: "lock-1",
+		governance_lock_script: "lock-1",
+	};
+	let input = create_input_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	inputs.push(input);
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(10),
+		token_logic: Some(&token_logic_hash_approve),
+		custom: None,
+		lock_script: "lock-1",
+		governance_lock_script: "lock-1",
+	};
+	let input = create_input_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	inputs.push(input);
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(0),
+		token_logic: Some(&token_logic_hash_approve),
+		custom: None,
+		lock_script: "lock-1",
+		governance_lock_script: "lock-1",
+	};
+	let input = create_input_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	inputs.push(input);
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: None,
+		token_logic: None,
+		custom: None,
+		lock_script: "lock-1",
+		governance_lock_script: "lock-1",
+	};
+	let input = create_input_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	inputs.push(input);
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(0),
+		token_logic: None,
+		custom: None,
+		lock_script: "lock-1",
+		governance_lock_script: "lock-1",
+	};
+	let input = create_input_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	inputs.push(input);
+
+	// Prepare outputs.
+	let outputs: Vec<CellOutput> = vec!();
+	let outputs_data: Vec<Bytes> = vec!();
+
+	// Populate the transaction, build, and complete.
+	let tx = tx.inputs(inputs).outputs(outputs).outputs_data(outputs_data.pack()).build();
+	let tx = context.complete_tx(tx);
+
+	// Execute the transaction.
+	let _cycles = context.verify_tx(&tx, MAX_CYCLES).expect("pass verification");
+	// println!("Cycles: {}", cycles);
+}
+
+#[test]
+fn token_logic_reject_burn_quantity_zero()
+{
+	// Get defaults.
+	let (mut context, tx, resources) = build_default_context_and_resources();
+	let token_logic_hash_reject = resources.binary_hashes.get("token-logic-reject").unwrap();
+
+	// Prepare inputs.
+	let mut inputs = vec!();
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(0),
+		token_logic: Some(&token_logic_hash_reject),
+		custom: None,
+		lock_script: "lock-1",
+		governance_lock_script: "lock-5",
+	};
+	let input = create_input_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	inputs.push(input);
+
+	// Prepare outputs.
+	let outputs: Vec<CellOutput> = vec!();
+	let outputs_data: Vec<Bytes> = vec!();
+
+	// Populate the transaction, build, and complete.
+	let tx = tx.inputs(inputs).outputs(outputs).outputs_data(outputs_data.pack()).build();
+	let tx = context.complete_tx(tx);
+
+	// Execute the transaction.
+	let _cycles = context.verify_tx(&tx, MAX_CYCLES).expect("pass verification");
+	// println!("Cycles: {}", cycles);
+}
+
+#[test]
+fn token_logic_reject_burn_token_logic()
+{
+	// Get defaults.
+	let (mut context, tx, resources) = build_default_context_and_resources();
+	let token_logic_hash_reject = resources.binary_hashes.get("token-logic-reject").unwrap();
+
+	// Prepare inputs.
+	let mut inputs = vec!();
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(10),
+		token_logic: Some(&token_logic_hash_reject),
+		custom: None,
+		lock_script: "lock-1",
+		governance_lock_script: "lock-5",
+	};
+	let input = create_input_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	inputs.push(input);
+
+	// Prepare outputs.
+	let outputs: Vec<CellOutput> = vec!();
+	let outputs_data: Vec<Bytes> = vec!();
+
+	// Populate the transaction, build, and complete.
+	let tx = tx.inputs(inputs).outputs(outputs).outputs_data(outputs_data.pack()).build();
+	let tx = context.complete_tx(tx);
+
+	// Execute the transaction.
+	let _cycles = context.verify_tx(&tx, MAX_CYCLES).expect("pass verification");
+	// println!("Cycles: {}", cycles);
+}
+
+#[test]
+fn token_logic_reject_burn_custom()
+{
+	// Get defaults.
+	let (mut context, tx, resources) = build_default_context_and_resources();
+	let token_logic_hash_reject = resources.binary_hashes.get("token-logic-reject").unwrap();
+
+	// Prepare inputs.
+	let mut inputs = vec!();
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(10),
+		token_logic: Some(&token_logic_hash_reject),
+		custom: Some("Hello World!"),
+		lock_script: "lock-1",
+		governance_lock_script: "lock-5",
+	};
+	let input = create_input_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	inputs.push(input);
+
+	// Prepare outputs.
+	let outputs: Vec<CellOutput> = vec!();
+	let outputs_data: Vec<Bytes> = vec!();
+
+	// Populate the transaction, build, and complete.
+	let tx = tx.inputs(inputs).outputs(outputs).outputs_data(outputs_data.pack()).build();
+	let tx = context.complete_tx(tx);
+
+	// Execute the transaction.
+	let _cycles = context.verify_tx(&tx, MAX_CYCLES).expect("pass verification");
+	// println!("Cycles: {}", cycles);
+}
+
+#[test]
+fn token_logic_reject_burn_multiple()
+{
+	// Get defaults.
+	let (mut context, tx, resources) = build_default_context_and_resources();
+	let token_logic_hash_reject = resources.binary_hashes.get("token-logic-reject").unwrap();
+
+	// Prepare inputs.
+	let mut inputs = vec!();
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(10),
+		token_logic: Some(&token_logic_hash_reject),
+		custom: Some("Hello World!"),
+		lock_script: "lock-1",
+		governance_lock_script: "lock-5",
+	};
+	let input = create_input_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	inputs.push(input);
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(10),
+		token_logic: Some(&token_logic_hash_reject),
+		custom: None,
+		lock_script: "lock-1",
+		governance_lock_script: "lock-5",
+	};
+	let input = create_input_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	inputs.push(input);
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(0),
+		token_logic: Some(&token_logic_hash_reject),
+		custom: None,
+		lock_script: "lock-1",
+		governance_lock_script: "lock-5",
+	};
+	let input = create_input_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	inputs.push(input);
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: None,
+		token_logic: None,
+		custom: None,
+		lock_script: "lock-1",
+		governance_lock_script: "lock-5",
+	};
+	let input = create_input_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	inputs.push(input);
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(0),
+		token_logic: None,
+		custom: None,
+		lock_script: "lock-1",
+		governance_lock_script: "lock-5",
+	};
+	let input = create_input_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	inputs.push(input);
+
+	// Prepare outputs.
+	let outputs: Vec<CellOutput> = vec!();
+	let outputs_data: Vec<Bytes> = vec!();
+
+	// Populate the transaction, build, and complete.
+	let tx = tx.inputs(inputs).outputs(outputs).outputs_data(outputs_data.pack()).build();
+	let tx = context.complete_tx(tx);
+
+	// Execute the transaction.
+	let _cycles = context.verify_tx(&tx, MAX_CYCLES).expect("pass verification");
+	// println!("Cycles: {}", cycles);
+}
+
+#[test]
+fn token_logic_reject_burn_quantity_zero_owner()
+{
+	// Get defaults.
+	let (mut context, tx, resources) = build_default_context_and_resources();
+	let token_logic_hash_reject = resources.binary_hashes.get("token-logic-reject").unwrap();
+
+	// Prepare inputs.
+	let mut inputs = vec!();
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(0),
+		token_logic: Some(&token_logic_hash_reject),
+		custom: None,
+		lock_script: "lock-1",
+		governance_lock_script: "lock-1",
+	};
+	let input = create_input_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	inputs.push(input);
+
+	// Prepare outputs.
+	let outputs: Vec<CellOutput> = vec!();
+	let outputs_data: Vec<Bytes> = vec!();
+
+	// Populate the transaction, build, and complete.
+	let tx = tx.inputs(inputs).outputs(outputs).outputs_data(outputs_data.pack()).build();
+	let tx = context.complete_tx(tx);
+
+	// Execute the transaction.
+	let _cycles = context.verify_tx(&tx, MAX_CYCLES).expect("pass verification");
+	// println!("Cycles: {}", cycles);
+}
+
+#[test]
+fn token_logic_reject_burn_token_logic_owner()
+{
+	// Get defaults.
+	let (mut context, tx, resources) = build_default_context_and_resources();
+	let token_logic_hash_reject = resources.binary_hashes.get("token-logic-reject").unwrap();
+
+	// Prepare inputs.
+	let mut inputs = vec!();
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(10),
+		token_logic: Some(&token_logic_hash_reject),
+		custom: None,
+		lock_script: "lock-1",
+		governance_lock_script: "lock-1",
+	};
+	let input = create_input_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	inputs.push(input);
+
+	// Prepare outputs.
+	let outputs: Vec<CellOutput> = vec!();
+	let outputs_data: Vec<Bytes> = vec!();
+
+	// Populate the transaction, build, and complete.
+	let tx = tx.inputs(inputs).outputs(outputs).outputs_data(outputs_data.pack()).build();
+	let tx = context.complete_tx(tx);
+
+	// Execute the transaction.
+	let _cycles = context.verify_tx(&tx, MAX_CYCLES).expect("pass verification");
+	// println!("Cycles: {}", cycles);
+}
+
+#[test]
+fn token_logic_reject_burn_custom_owner()
+{
+	// Get defaults.
+	let (mut context, tx, resources) = build_default_context_and_resources();
+	let token_logic_hash_reject = resources.binary_hashes.get("token-logic-reject").unwrap();
+
+	// Prepare inputs.
+	let mut inputs = vec!();
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(10),
+		token_logic: Some(&token_logic_hash_reject),
+		custom: Some("Hello World!"),
+		lock_script: "lock-1",
+		governance_lock_script: "lock-1",
+	};
+	let input = create_input_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	inputs.push(input);
+
+	// Prepare outputs.
+	let outputs: Vec<CellOutput> = vec!();
+	let outputs_data: Vec<Bytes> = vec!();
+
+	// Populate the transaction, build, and complete.
+	let tx = tx.inputs(inputs).outputs(outputs).outputs_data(outputs_data.pack()).build();
+	let tx = context.complete_tx(tx);
+
+	// Execute the transaction.
+	let _cycles = context.verify_tx(&tx, MAX_CYCLES).expect("pass verification");
+	// println!("Cycles: {}", cycles);
+}
+
+#[test]
+fn token_logic_reject_burn_multiple_owner()
+{
+	// Get defaults.
+	let (mut context, tx, resources) = build_default_context_and_resources();
+	let token_logic_hash_reject = resources.binary_hashes.get("token-logic-reject").unwrap();
+
+	// Prepare inputs.
+	let mut inputs = vec!();
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(10),
+		token_logic: Some(&token_logic_hash_reject),
+		custom: Some("Hello World!"),
+		lock_script: "lock-1",
+		governance_lock_script: "lock-1",
+	};
+	let input = create_input_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	inputs.push(input);
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(10),
+		token_logic: Some(&token_logic_hash_reject),
+		custom: None,
+		lock_script: "lock-1",
+		governance_lock_script: "lock-1",
+	};
+	let input = create_input_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	inputs.push(input);
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(0),
+		token_logic: Some(&token_logic_hash_reject),
+		custom: None,
+		lock_script: "lock-1",
+		governance_lock_script: "lock-1",
+	};
+	let input = create_input_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	inputs.push(input);
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: None,
+		token_logic: None,
+		custom: None,
+		lock_script: "lock-1",
+		governance_lock_script: "lock-1",
+	};
+	let input = create_input_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	inputs.push(input);
+	let nft_cell_data = NftCellData
+	{
+		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
+		quantity: Some(0),
+		token_logic: None,
+		custom: None,
+		lock_script: "lock-1",
+		governance_lock_script: "lock-1",
+	};
+	let input = create_input_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
+	inputs.push(input);
+
+	// Prepare outputs.
+	let outputs: Vec<CellOutput> = vec!();
+	let outputs_data: Vec<Bytes> = vec!();
+
+	// Populate the transaction, build, and complete.
+	let tx = tx.inputs(inputs).outputs(outputs).outputs_data(outputs_data.pack()).build();
+	let tx = context.complete_tx(tx);
+
+	// Execute the transaction.
+	let _cycles = context.verify_tx(&tx, MAX_CYCLES).expect("pass verification");
+	// println!("Cycles: {}", cycles);
+}
