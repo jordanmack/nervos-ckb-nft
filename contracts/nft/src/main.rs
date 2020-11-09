@@ -197,16 +197,15 @@ fn calculate_instance_id(seed_cell_outpoint: &OutPoint, output_index: usize) -> 
 /// Collect the indexes of Cells that match a specific script hash from the specified source.
 fn collect_nft_indexes(script_hash: [u8; BLAKE2B256_HASH_LEN], source: Source) -> Result<Vec<usize>, Error>
 {
+	// Extended version of load_cell_type_hash that also includes the index in the output.
 	let load_cell_type_hash_ex = |index, source| 
 	{
-		match load_cell_type_hash(index, source)
-		{
-			Ok(hash) => Ok((hash, index)),
-			Err(SysError::ItemMissing) => Ok((None, index)),
-			Err(err) => Err(err),
-		}
+		let hash = load_cell_type_hash(index, source)?;
+
+		Ok((hash, index))
 	};
 
+	// Filter the returned indexes to only those which match the specified script hash.
 	let filter_matching_script_hashes = |(current_script_hash, index): (Option<[u8; BLAKE2B256_HASH_LEN]>, usize)|
 	{
 		if current_script_hash.map(|x|x==script_hash).unwrap_or(false)
