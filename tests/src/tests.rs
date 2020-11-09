@@ -2448,53 +2448,6 @@ fn transfer_quantity_invalid_quantity_length()
 }
 
 #[test]
-fn transfer_token_logic_unauthorized()
-{
-	// Get defaults.
-	let (mut context, tx, resources) = build_default_context_and_resources();
-	let token_logic_hash_approve = resources.binary_hashes.get("token-logic-approve").unwrap();
-	let token_logic_hash_null = hex::encode(CODE_HASH_NULL);
-
-	// Prepare inputs.
-	let mut inputs = vec!();
-	let nft_cell_data = NftCellData
-	{
-		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
-		quantity: Some(100),
-		token_logic: Some(&token_logic_hash_approve),
-		custom: None,
-		lock_script: "lock-1",
-		governance_lock_script: "lock-5",
-	};
-	let input = create_input_nft_cell(&mut context, &resources, 2_000, &nft_cell_data);
-	inputs.push(input);
-
-	// Prepare outputs.
-	let mut outputs = vec!();
-	let mut outputs_data = vec!();
-	let nft_cell_data = NftCellData
-	{
-		instance_id: "0101010101010101010101010101010101010101010101010101010101010101",
-		quantity: Some(50),
-		token_logic: Some(&token_logic_hash_null),
-		custom: None,
-		lock_script: "lock-2",
-		governance_lock_script: "lock-5",
-	};
-	let (output, output_data) = create_output_nft_cell(&mut context, &resources, 1_000, &nft_cell_data);
-	outputs.push(output);
-	outputs_data.push(output_data);
-
-	// Populate the transaction, build, and complete.
-	let tx = tx.inputs(inputs).outputs(outputs).outputs_data(outputs_data.pack()).build();
-	let tx = context.complete_tx(tx);
-
-	// Execute the transaction.
-	let err = context.verify_tx(&tx, MAX_CYCLES).unwrap_err();
-	assert_error_eq!(err, ScriptError::ValidationFailure(i8::from(Error::UnauthorizedOperation)).input_type_script(0));
-}
-
-#[test]
 fn transfer_token_logic_invalid_token_logic_length()
 {
 	// Get defaults.
@@ -3687,6 +3640,52 @@ fn update_quantity_owner_invalid_quantity_length()
 	// Execute the transaction.
 	let err = context.verify_tx(&tx, MAX_CYCLES).unwrap_err();
 	assert_error_eq!(err, ScriptError::ValidationFailure(i8::from(Error::InvalidQuantityLength)).input_type_script(0));
+}
+
+#[test]
+fn update_token_logic_owner_invalid_token_logic_length()
+{
+	// Get defaults.
+	let (mut context, tx, resources) = build_default_context_and_resources();
+
+	// Prepare inputs.
+	let mut inputs = vec!();
+	let mut data = vec!();
+	data.append(&mut hex::decode("0101010101010101010101010101010101010101010101010101010101010101").unwrap());
+	data.append(&mut 0u128.to_le_bytes().to_vec());
+	let nft_cell_data_raw = NftCellDataRaw
+	{
+		data: &data,
+		lock_script: "lock-1",
+		governance_lock_script: "lock-1",
+	};
+	let input = create_input_nft_cell_raw(&mut context, &resources, 1_000, &nft_cell_data_raw);
+	inputs.push(input);
+
+	// Prepare outputs.
+	let mut outputs = vec!();
+	let mut outputs_data = vec!();
+	let mut data = vec!();
+	data.append(&mut hex::decode("0101010101010101010101010101010101010101010101010101010101010101").unwrap());
+	data.append(&mut 0u128.to_le_bytes().to_vec());
+	data.append(&mut hex::decode("deadbeef").unwrap());
+	let nft_cell_data_raw = NftCellDataRaw
+	{
+		data: &data,
+		lock_script: "lock-1",
+		governance_lock_script: "lock-1",
+	};
+	let (output, output_data) = create_output_nft_cell_raw(&mut context, &resources, 1_000, &nft_cell_data_raw);
+	outputs.push(output);
+	outputs_data.push(output_data);
+
+	// Populate the transaction, build, and complete.
+	let tx = tx.inputs(inputs).outputs(outputs).outputs_data(outputs_data.pack()).build();
+	let tx = context.complete_tx(tx);
+
+	// Execute the transaction.
+	let err = context.verify_tx(&tx, MAX_CYCLES).unwrap_err();
+	assert_error_eq!(err, ScriptError::ValidationFailure(i8::from(Error::InvalidTokenLogicLength)).input_type_script(0));
 }
 
 #[test]
